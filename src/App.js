@@ -1,16 +1,16 @@
 import "./styles.css";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 const API_NO_AUTH = "/api/notifications/noauth/subscribe";
 
 const API = "/api/notifications/subscribe";
 
 export default function App() {
+  const [messages, setMessages] = useState([]);
+
   const getRealtimeData = useCallback((data) => {
-    // process the data here,
-    // then pass it to state to be rendered
-    // eslint-disable-next-line no-console
-    console.log("Message -----", data);
+    setMessages(prev => [...prev, data])
+    console.log("Message -----", data, messages);
   }, []);
 
   useEffect(() => {
@@ -23,11 +23,10 @@ export default function App() {
       // sse.close();
     };
     sse.addEventListener("HEARTBEAT", (e) => {
-      // eslint-disable-next-line no-console
+      getRealtimeData(JSON.parse(e.data));
       console.log(e.data);
     });
     sse.onopen = (e) => {
-      // eslint-disable-next-line no-console
       console.log("Open", e);
     };
     return () => {
